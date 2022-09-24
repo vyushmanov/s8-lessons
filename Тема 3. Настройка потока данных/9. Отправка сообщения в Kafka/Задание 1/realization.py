@@ -4,6 +4,7 @@ from pyspark.sql import SparkSession, DataFrame
 from pyspark.sql import functions as f
 from pyspark.sql.types import StructType, StructField, DoubleType, StringType, TimestampType, IntegerType
 
+TOPIC_NAME_91 = '' # Укажите здесь название Вашего топика student.topic.cohort<номер когорты>.<username>.out
 
 def spark_init(test_name) -> SparkSession:
     pass
@@ -44,8 +45,17 @@ if __name__ == "__main__":
              .writeStream
              .outputMode("append")
              .format("kafka")
-             .option("topic", "student.test")
-             .trigger(processingTime="1 minute")
+             .option('kafka.bootstrap.servers', 'rc1b-2erh7b35n4j4v869.mdb.yandexcloud.net:9091')
+             .options(**kafka_security_options)
+             .option("topic", TOPIC_NAME_91)
+             .trigger(processingTime="15 seconds")
              .option("truncate", False)
              .start())
+
+    while query.isActive:
+        print(f"query information: runId={query.runId}, "
+              f"status is {query.status}, "
+              f"recent progress={query.recentProgress}")
+        sleep(30)
+
     query.awaitTermination()
