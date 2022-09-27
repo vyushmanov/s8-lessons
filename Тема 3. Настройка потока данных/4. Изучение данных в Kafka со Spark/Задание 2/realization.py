@@ -30,8 +30,8 @@ def transform(df: DataFrame) -> DataFrame:
 spark = spark_init()
 
 source_df = load_df(spark)
-output_df = transform(source_df)
+df = transform(source_df)
 
 
-output_df.printSchema()
-output_df.show(truncate=False)
+df.printSchema()
+df.show(truncate=False)
