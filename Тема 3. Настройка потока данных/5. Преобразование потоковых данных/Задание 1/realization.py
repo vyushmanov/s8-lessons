@@ -1,6 +1,6 @@
-from pyspark.sql import SparkSession
-from pyspark.sql import functions as f, DataFrame
-from pyspark.sql.types import StructType, StructField, IntegerType, DoubleType, StringType
+from pyspark.sql import SparkSession, DataFrame
+from pyspark.sql import functions as f
+from pyspark.sql.types import StructType, StructField, DoubleType, StringType, TimestampType
 
 # необходимая библиотека с идентификатором в maven
 # вы можете использовать ее с помощью метода .config и опции "spark.jars.packages"
@@ -16,11 +16,11 @@ kafka_security_options = {
 }
 
 def spark_init() -> SparkSession:
-    pass
+		pass
 
 
 def load_df(spark: SparkSession) -> DataFrame:
-    pass
+		pass # не забудьте здесь указать то-же имя топика что и в TOPIC_NAME 
 
 
 def transform(df: DataFrame) -> DataFrame:
@@ -32,6 +32,14 @@ spark = spark_init()
 source_df = load_df(spark)
 output_df = transform(source_df)
 
-
-output_df.printSchema()
-output_df.show(truncate=False)
+query = (output_df
+         .writeStream
+         .outputMode("append")
+         .format("console")
+         .option("truncate", False)
+         .trigger(once=True)
+         .start())
+try:
+    query.awaitTermination()
+finally:
+    query.stop()
