@@ -10,8 +10,8 @@ def spark_init(test_name) -> SparkSession:
 
 
 postgresql_settings = {
-    'user': 'master',
-    'password': 'de-master-password'
+    'user': 'student',
+    'password': 'de-student'
 }
 
 
@@ -22,7 +22,7 @@ def read_marketing(spark: SparkSession) -> DataFrame:
 kafka_security_options = {
     'kafka.security.protocol': 'SASL_SSL',
     'kafka.sasl.mechanism': 'SCRAM-SHA-512',
-    'kafka.sasl.jaas.config': 'org.apache.kafka.common.security.scram.ScramLoginModule required username=\"kafka-admin\" password=\"de-kafka-admin-2022\";',
+    'kafka.sasl.jaas.config': 'org.apache.kafka.common.security.scram.ScramLoginModule required username=\"de-student\" password=\"ltcneltyn\";'
 }
 
 
