@@ -4,6 +4,8 @@ import importlib
 
 import requests
 
+EXITCODE = '-=#de_exit#=-'
+
 class TerminalColors:
         HEADER = '\033[95m'
         OKBLUE = '\033[94m'
@@ -39,25 +41,41 @@ def submit(t_code, rlz_file=''):
     print(f'HOST: {USER_HOST}')
 
     try:
-        r = requests.post(
-            f'http://{USER_HOST}:3002',
-            json={
-                "code": user_code,
-                "test": t_code,
-                "conn": user_settings
-                },
-            timeout=300
-        )
-    except requests.exceptions.Timeout as e: 
+        while True:
+            r = requests.post(
+                f'http://{USER_HOST}:3002',
+                json={
+                    "code": user_code,
+                    "test": t_code,
+                    "conn": user_settings
+                    },
+                # timeout=3
+            )
+            if user_code:
+                user_settings = f'{user_settings}\nDE_RUN = True\n'
+            user_code = ''
+
+            if EXITCODE in r.json()['stdout']:
+                print(r.json()['stderr'].replace('__test', rlz_file[:-3])
+                      .replace(EXITCODE,'')
+                      .replace('/app/sprint-8-tests/', '')
+                      .replace('de08030802run', 'realization'))
+                print(r.json()['stdout'].replace('__test', rlz_file[:-3])
+                      .replace(EXITCODE,''))
+                break
+
+            if r.json()['stderr'].strip():
+                print(r.json()['stderr'].replace('__test', rlz_file[:-3]).strip())
+            if r.json()['stdout'].strip():
+                print(r.json()['stdout'].replace('__test', rlz_file[:-3]).strip())
+
+    except requests.exceptions.Timeout as e:
         print(e)
         return
 
-    print(r.json()['stderr'].replace('__test',rlz_file[:-3]))
-    print(r.json()['stdout'].replace('__test',rlz_file[:-3]))
 
 if __name__ == '__main__':
     submit(
         'de08030802',
         'realization.py'
     )
-
