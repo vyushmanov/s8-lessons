@@ -53,27 +53,30 @@ def submit(t_code, rlz_file=''):
                 # timeout=3
             )
             if user_code:
-                user_settings = f'{user_settings}\nDE_91_RUN =True\n'
+                user_settings = f'{user_settings}\nDE_RUN = True\n'
             user_code = ''
 
-
             if EXITCODE in r.json()['stdout']:
-                print(r.json()['stderr'].replace('__test',rlz_file[:-3]).replace(EXITCODE,''))
-                print(r.json()['stdout'].replace('__test',rlz_file[:-3]).replace(EXITCODE,''))
+                print(r.json()['stderr'].replace('__test', rlz_file[:-3])
+                      .replace(EXITCODE,'')
+                      .replace('/app/sprint-8-tests/', '')
+                      .replace('de08030802run', 'realization'))
+                print(r.json()['stdout'].replace('__test', rlz_file[:-3])
+                      .replace(EXITCODE,''))
                 break
 
-            if len(r.json()['stderr']) > 1:
-                print(r.json()['stderr'].replace('__test',rlz_file[:-3]))
-            if len(r.json()['stdout']) > 1:
-                print(r.json()['stdout'].replace('__test',rlz_file[:-3]))
-
-    except requests.exceptions.Timeout as e: 
+            if r.json()['stderr'].strip():
+                print(r.json()['stderr'].replace('__test', rlz_file[:-3]).strip())
+            if r.json()['stdout'].strip():
+                print(r.json()['stdout'].replace('__test', rlz_file[:-3]).strip())
+            time.sleep(5)
+    except requests.exceptions.Timeout as e:
         print(e)
         return
+
 
 if __name__ == '__main__':
     submit(
         'de08030901',
         'realization.py'
     )
-
